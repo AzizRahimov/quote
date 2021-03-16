@@ -2,9 +2,11 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/AzizRahimov/quote/pkg/models"
 	"github.com/AzizRahimov/quote/pkg/server/utils"
 	"github.com/julienschmidt/httprouter"
+	"log"
 	"net/http"
 	"time"
 )
@@ -34,6 +36,7 @@ func (s *Server) handleCreateQuote(w http.ResponseWriter, r *http.Request, _ htt
 	quote.CreatedAt = time.Now()
 	err = s.quotes.CreateQuote(&quote)
 	if err != nil {
+		log.Print(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 	//resp, err := json.Marshal(quote)
@@ -53,6 +56,7 @@ func (s *Server) handleCreateQuote(w http.ResponseWriter, r *http.Request, _ htt
 func (s *Server) handlerGetAllQuotes(w http.ResponseWriter, r *http.Request, _ httprouter.Params)  {
 	quotes, err := s.quotes.GetAll()
 	if err != nil {
+		log.Print(err)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	}
 
@@ -65,12 +69,13 @@ func (s *Server) handlerEditQuote(w http.ResponseWriter, r *http.Request, _ http
 	quote := &models.Quote{}
 	err := json.NewDecoder(r.Body).Decode(&quote)
 	if err != nil {
-
+		log.Print(err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 
 	}
 	editQuote, err := s.quotes.EditQuote(quote)
 	if err != nil {
+		log.Print(err)
 		http.Error(w, "id not exist", http.StatusNotFound)
 		return
 	}
@@ -84,10 +89,24 @@ func (s *Server) handleRemoveQuoteByID(w http.ResponseWriter, r *http.Request, p
 
 	quotes, err := s.quotes.DeleteQuoteByID(id)
 	if err == false{
+		log.Print(err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 	}
 
 	utils.RespJson(w, quotes)
 
+
+}
+
+func (s *Server) handleGetQuoteByCategory(w http.ResponseWriter, r *http.Request, ps httprouter.Params)  {
+	category := ps.ByName("category")
+	fmt.Println(category)
+
+	quotes, err := s.quotes.GetQuotesByCategory(category)
+	if err != nil {
+		log.Print(err)
+		http.Error(w, "Category not found", http.StatusNotFound)
+	}
+	utils.RespJson(w, quotes)
 
 }

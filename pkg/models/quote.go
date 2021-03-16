@@ -88,4 +88,20 @@ func (q *Quotes) DeleteQuoteByID(id string) ([]Quote, bool) {
 	return nil, false
 }
 
+func (q *Quotes) GetQuotesByCategory(category string) ([]Quote, error) {
 
+	quotes := []Quote{}
+
+	for _, value := range q.Quotes{
+		if value.Category == category{
+			quotes = append(quotes, value)
+
+		}
+	}
+	if quotes == nil{
+		return nil, ErrNotFound
+	}
+
+
+	return quotes, nil
+}
