@@ -3,9 +3,10 @@ package app
 import (
 	"encoding/json"
 	"github.com/AzizRahimov/quote/pkg/models"
+	"github.com/AzizRahimov/quote/pkg/server/utils"
 	"github.com/julienschmidt/httprouter"
-	"log"
 	"net/http"
+	"time"
 )
 
 type Server struct {
@@ -30,19 +31,32 @@ func (s *Server) handleCreateQuote(w http.ResponseWriter, r *http.Request, _ htt
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 	}
-
+	quote.CreatedAt = time.Now()
 	err = s.quotes.CreateQuote(quote)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
-	resp, err := json.Marshal(quote)
+	//resp, err := json.Marshal(quote)
+	//if err != nil {
+	//	log.Print(err)
+	//}
+	utils.RespJson(w, quote)
+
+	//w.Header().Set("Content-Type", "application/json")
+	//_, err = w.Write(resp)
+	//if err != nil {
+	//	log.Println(err)
+	//}
+
+}
+
+func (s *Server) handlerGetAllQuotes(w http.ResponseWriter, r *http.Request, _ httprouter.Params)  {
+	quotes, err := s.quotes.GetAll()
 	if err != nil {
-		log.Print(err)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	}
-	w.Header().Set("Content-Type", "application/json")
-	_, err = w.Write(resp)
-	if err != nil {
-		log.Println(err)
-	}
+
+	utils.RespJson(w, quotes)
+
 
 }

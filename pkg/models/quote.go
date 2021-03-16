@@ -1,12 +1,14 @@
 package models
 
 import (
+	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"time"
 )
 
 
-
+var ErrNotFound = errors.New("quotes not found")
 
 type Quote struct {
 	ID string `json:"id"`
@@ -33,6 +35,7 @@ func NewQuotes() *Quotes {
 
 //Create Quotes
 func (q *Quotes) CreateQuote(quote Quote) (err error ) {
+		fmt.Println(quote)
 
 		quote.ID = uuid.New().String()
 		q.Quotes[quote.ID] = quote
@@ -44,5 +47,18 @@ func (q *Quotes) CreateQuote(quote Quote) (err error ) {
 
 		return   nil
 	
+}
+
+func (q *Quotes) GetAll() ([]Quote, error) {
+	quotes := []Quote{}
+	for _, value := range q.Quotes{
+		quotes = append(quotes, value)
+
+	}
+	if quotes == nil{
+		return nil,  ErrNotFound
+	}
+
+	return quotes, nil
 }
 
