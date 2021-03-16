@@ -21,11 +21,15 @@ type Quotes struct {
 	Quotes map[string]Quote
 }
 
-
-
-func NewQuotes(quotes map[string]Quote) *Quotes {
-	return &Quotes{Quotes: quotes}
+func NewQuotes() *Quotes {
+	return &Quotes{Quotes: make(map[string]Quote)}
 }
+
+
+
+//func NewQuotes(quotes map[string]Quote) *Quotes {
+//	return &Quotes{Quotes: quotes}
+//}
 
 //Create Quotes
 func (q *Quotes) CreateQuote(quote Quote) (err error ) {
