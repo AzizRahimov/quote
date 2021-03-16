@@ -61,9 +61,7 @@ func (q *Quotes) GetAll() ([]Quote, error) {
 
 func (q *Quotes) EditQuote(quote *Quote) (*Quote, error)  {
 
-	//if _, ok := q.Quotes[quote.ID]; ok {
-	//	q.Quotes[quote.ID] = *quote
-	//}
+
 
 		for key, _ := range q.Quotes{
 			if key == quote.ID{
@@ -76,4 +74,18 @@ func (q *Quotes) EditQuote(quote *Quote) (*Quote, error)  {
 	return nil, ErrIDNotFound
 
 }
+
+func (q *Quotes) DeleteQuoteByID(id string) ([]Quote, bool) {
+	if id == ""{
+		return nil, false
+	}
+	if _, ok := q.Quotes[id]; ok {
+		delete(q.Quotes, id)
+		quotes, _ := q.GetAll()
+		return quotes, true
+	}
+
+	return nil, false
+}
+
 

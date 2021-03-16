@@ -78,3 +78,16 @@ func (s *Server) handlerEditQuote(w http.ResponseWriter, r *http.Request, _ http
 
 
 }
+
+func (s *Server) handleRemoveQuoteByID(w http.ResponseWriter, r *http.Request, ps httprouter.Params)  {
+	id := ps.ByName("id")
+
+	quotes, err := s.quotes.DeleteQuoteByID(id)
+	if err == false{
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	}
+
+	utils.RespJson(w, quotes)
+
+
+}
