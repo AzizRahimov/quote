@@ -32,7 +32,7 @@ func (s *Server) handleCreateQuote(w http.ResponseWriter, r *http.Request, _ htt
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 	}
 	quote.CreatedAt = time.Now()
-	err = s.quotes.CreateQuote(quote)
+	err = s.quotes.CreateQuote(&quote)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
@@ -57,6 +57,24 @@ func (s *Server) handlerGetAllQuotes(w http.ResponseWriter, r *http.Request, _ h
 	}
 
 	utils.RespJson(w, quotes)
+
+
+}
+
+func (s *Server) handlerEditQuote(w http.ResponseWriter, r *http.Request, _ httprouter.Params)  {
+	quote := &models.Quote{}
+	err := json.NewDecoder(r.Body).Decode(&quote)
+	if err != nil {
+
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+
+	}
+	editQuote, err := s.quotes.EditQuote(quote)
+	if err != nil {
+		http.Error(w, "id not exist", http.StatusNotFound)
+		return
+	}
+	utils.RespJson(w, editQuote)
 
 
 }

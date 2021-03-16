@@ -9,6 +9,7 @@ import (
 
 
 var ErrNotFound = errors.New("quotes not found")
+var ErrIDNotFound = errors.New("ID quotes not found")
 
 type Quote struct {
 	ID string `json:"id"`
@@ -29,16 +30,12 @@ func NewQuotes() *Quotes {
 
 
 
-//func NewQuotes(quotes map[string]Quote) *Quotes {
-//	return &Quotes{Quotes: quotes}
-//}
-
 //Create Quotes
-func (q *Quotes) CreateQuote(quote Quote) (err error ) {
+func (q *Quotes) CreateQuote(quote *Quote) (err error ) {
 		fmt.Println(quote)
 
 		quote.ID = uuid.New().String()
-		q.Quotes[quote.ID] = quote
+		q.Quotes[quote.ID] = *quote
 
 		if q.Quotes == nil{
 			return err
@@ -60,5 +57,23 @@ func (q *Quotes) GetAll() ([]Quote, error) {
 	}
 
 	return quotes, nil
+}
+
+func (q *Quotes) EditQuote(quote *Quote) (*Quote, error)  {
+
+	//if _, ok := q.Quotes[quote.ID]; ok {
+	//	q.Quotes[quote.ID] = *quote
+	//}
+
+		for key, _ := range q.Quotes{
+			if key == quote.ID{
+				q.Quotes[quote.ID] = *quote
+				return quote, nil
+			}
+
+		}
+
+	return nil, ErrIDNotFound
+
 }
 
