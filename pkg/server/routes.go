@@ -6,6 +6,7 @@ func (s *Server) Init()  {
 	s.router.POST("/editquote", s.handlerEditQuote)
 	s.router.GET("/quotes/:category", s.handleGetQuoteByCategory)
 	s.router.DELETE("/quote/:id", s.handleRemoveQuoteByID)
+	s.router.GET("/randomquote", s.handleGetRandomQuote)
 
 
 }

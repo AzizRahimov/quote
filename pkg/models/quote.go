@@ -4,12 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"math/rand"
 	"time"
 )
 
 
 var ErrNotFound = errors.New("quotes not found")
 var ErrIDNotFound = errors.New("ID quotes not found")
+var ErrMustBePositive = errors.New("Number can't be zero")
 
 type Quote struct {
 	ID string `json:"id"`
@@ -104,4 +106,23 @@ func (q *Quotes) GetQuotesByCategory(category string) ([]Quote, error) {
 
 
 	return quotes, nil
+}
+
+func (q *Quotes) GetRandomQuote() (*Quote, error) {
+	rand.Seed(time.Now().UnixNano())
+	count := 0
+	randomNumber := rand.Intn(len(q.Quotes))
+
+	if randomNumber == 0 {
+		return nil, ErrMustBePositive
+	}
+
+	for _, quote := range q.Quotes {
+		count++
+		if count == randomNumber {
+			return &quote, nil
+		}
+
+	}
+	return nil, ErrNotFound
 }

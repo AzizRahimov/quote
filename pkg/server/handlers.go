@@ -110,3 +110,13 @@ func (s *Server) handleGetQuoteByCategory(w http.ResponseWriter, r *http.Request
 	utils.RespJson(w, quotes)
 
 }
+
+func (s *Server) handleGetRandomQuote(w http.ResponseWriter, r *http.Request, _ httprouter.Params)  {
+	quote, err := s.quotes.GetRandomQuote()
+	if err != nil {
+		log.Print(err)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	}
+	utils.RespJson(w, quote)
+
+}
