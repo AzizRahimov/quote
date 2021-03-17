@@ -6,7 +6,9 @@ import (
 	"time"
 )
 
-func RespJson(w http.ResponseWriter, data interface{}) {
+
+// Send Response to client
+func SendResponse(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-type", "application/json")
 	err := json.NewEncoder(w).Encode(data)
 	if err != nil {
@@ -17,10 +19,8 @@ func RespJson(w http.ResponseWriter, data interface{}) {
 
 }
 
-
+// IsTimePassed - if time passed returns true
 func IsTimePassed(check, date time.Time) bool {
-
-
 	return check.After(date)
 }
 

@@ -4,36 +4,39 @@ import (
 	"fmt"
 	"github.com/AzizRahimov/quote/pkg/models"
 	app "github.com/AzizRahimov/quote/pkg/server"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/julienschmidt/httprouter"
 	"log"
-	"net"
 	"net/http"
+	"os"
 	"sync/atomic"
 	"time"
 )
 
 func main() {
 
-	host := "0.0.0.0"
-	port := "9999"
-
+	port, found := os.LookupEnv("SERVER_PORT")
+	if !found {
+		log.Fatal("Error, SERVER_PORT not set")
+	}
 
 	router := httprouter.New()
 	quoteSvc := models.NewQuotes()
 	server := app.NewServer(router, quoteSvc)
 	server.Init()
-	go worker(time.Minute *5, quoteSvc.DeleteOldQuotes)
+	go worker(time.Minute*5, quoteSvc.DeleteOldQuotes)
 
 	svc := http.Server{
 		Handler: server,
-		Addr: net.JoinHostPort(host, port)}
+		Addr:    port}
 
-	fmt.Println("Server is listening port", net.JoinHostPort(host, port))
+	fmt.Println("Server is listening on port", port)
 	err := svc.ListenAndServe()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error to run Server:", err)
 	}
 
+	time.Sleep(time.Minute * 2)
 }
 
 
