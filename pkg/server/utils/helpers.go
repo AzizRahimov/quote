@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 func RespJson(w http.ResponseWriter, data interface{}) {
@@ -14,3 +15,11 @@ func RespJson(w http.ResponseWriter, data interface{}) {
 
 
 }
+
+
+func IsTimePassed(check, date time.Time) bool {
+
+
+	return check.After(date)
+}
+

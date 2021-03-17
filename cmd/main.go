@@ -8,6 +8,8 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"sync/atomic"
+	"time"
 )
 
 func main() {
@@ -20,6 +22,7 @@ func main() {
 	quoteSvc := models.NewQuotes()
 	server := app.NewServer(router, quoteSvc)
 	server.Init()
+	go worker(time.Minute *5, quoteSvc.DeleteOldQuotes)
 
 	svc := http.Server{
 		Handler: server,
@@ -31,4 +34,17 @@ func main() {
 		log.Fatal(err)
 	}
 
+}
+
+
+func worker(d time.Duration, f func()) {
+	var reentrancyFlag int64
+	for range time.Tick(d) {
+		if atomic.CompareAndSwapInt64(&reentrancyFlag, 0, 1) {
+			defer atomic.StoreInt64(&reentrancyFlag, 0)
+		} else {
+			return
+		}
+		f()
+	}
 }

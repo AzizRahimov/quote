@@ -39,22 +39,14 @@ func (s *Server) handleCreateQuote(w http.ResponseWriter, r *http.Request, _ htt
 		log.Print(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
-	//resp, err := json.Marshal(quote)
-	//if err != nil {
-	//	log.Print(err)
-	//}
+
 	utils.RespJson(w, quote)
 
-	//w.Header().Set("Content-Type", "application/json")
-	//_, err = w.Write(resp)
-	//if err != nil {
-	//	log.Println(err)
-	//}
 
 }
 
 func (s *Server) handlerGetAllQuotes(w http.ResponseWriter, r *http.Request, _ httprouter.Params)  {
-	quotes, err := s.quotes.GetAll()
+	quotes, err := s.quotes.GetAllQuotes()
 	if err != nil {
 		log.Print(err)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)

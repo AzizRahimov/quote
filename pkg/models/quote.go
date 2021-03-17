@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/AzizRahimov/quote/pkg/server/utils"
 	"github.com/google/uuid"
 	"math/rand"
 	"time"
@@ -11,7 +12,7 @@ import (
 
 var ErrNotFound = errors.New("quotes not found")
 var ErrIDNotFound = errors.New("ID quotes not found")
-var ErrMustBePositive = errors.New("Number can't be zero")
+var ErrMustBePositive = errors.New("number can't be zero")
 
 type Quote struct {
 	ID string `json:"id"`
@@ -47,8 +48,8 @@ func (q *Quotes) CreateQuote(quote *Quote) (err error ) {
 		return   nil
 	
 }
-
-func (q *Quotes) GetAll() ([]Quote, error) {
+// Get All Quotes
+func (q *Quotes) GetAllQuotes() ([]Quote, error) {
 	quotes := []Quote{}
 	for _, value := range q.Quotes{
 		quotes = append(quotes, value)
@@ -61,11 +62,10 @@ func (q *Quotes) GetAll() ([]Quote, error) {
 	return quotes, nil
 }
 
+// EditQuote - edit quote by id
 func (q *Quotes) EditQuote(quote *Quote) (*Quote, error)  {
 
-
-
-		for key, _ := range q.Quotes{
+	for key, _ := range q.Quotes{
 			if key == quote.ID{
 				q.Quotes[quote.ID] = *quote
 				return quote, nil
@@ -76,20 +76,21 @@ func (q *Quotes) EditQuote(quote *Quote) (*Quote, error)  {
 	return nil, ErrIDNotFound
 
 }
-
+//Delete - Quote by ID
 func (q *Quotes) DeleteQuoteByID(id string) ([]Quote, bool) {
 	if id == ""{
 		return nil, false
 	}
 	if _, ok := q.Quotes[id]; ok {
 		delete(q.Quotes, id)
-		quotes, _ := q.GetAll()
+		quotes, _ := q.GetAllQuotes()
 		return quotes, true
 	}
 
 	return nil, false
 }
 
+// Get Quotes by Category
 func (q *Quotes) GetQuotesByCategory(category string) ([]Quote, error) {
 
 	quotes := []Quote{}
@@ -108,6 +109,8 @@ func (q *Quotes) GetQuotesByCategory(category string) ([]Quote, error) {
 	return quotes, nil
 }
 
+
+// Get Random Quote
 func (q *Quotes) GetRandomQuote() (*Quote, error) {
 	rand.Seed(time.Now().UnixNano())
 	count := 0
@@ -125,4 +128,19 @@ func (q *Quotes) GetRandomQuote() (*Quote, error) {
 
 	}
 	return nil, ErrNotFound
+}
+
+
+// Delete Quotes old quotes that were created 1 hour ago
+func (q *Quotes) DeleteOldQuotes() {
+
+	fmt.Println("функция вызвалась")
+	for _, quote := range q.Quotes {
+		fmt.Println("добралась до цикла")
+		// 9/10
+		if utils.IsTimePassed(time.Now().Add( - time.Hour), quote.CreatedAt) {
+			fmt.Println("true")
+			q.DeleteQuoteByID(quote.ID)
+		}
+	}
 }
