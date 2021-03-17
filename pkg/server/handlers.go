@@ -2,7 +2,6 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/AzizRahimov/quote/pkg/models"
 	"github.com/AzizRahimov/quote/pkg/server/utils"
 	"github.com/julienschmidt/httprouter"
@@ -32,12 +31,14 @@ func (s *Server) handleCreateQuote(w http.ResponseWriter, r *http.Request, _ htt
 	err := json.NewDecoder(r.Body).Decode(&quote)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
 	}
 	quote.CreatedAt = time.Now()
 	err = s.quotes.CreateQuote(&quote)
 	if err != nil {
 		log.Print(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
 	utils.RespJson(w, quote)
@@ -50,6 +51,7 @@ func (s *Server) handlerGetAllQuotes(w http.ResponseWriter, r *http.Request, _ h
 	if err != nil {
 		log.Print(err)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
 	}
 
 	utils.RespJson(w, quotes)
@@ -63,6 +65,7 @@ func (s *Server) handlerEditQuote(w http.ResponseWriter, r *http.Request, _ http
 	if err != nil {
 		log.Print(err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
 
 	}
 	editQuote, err := s.quotes.EditQuote(quote)
@@ -83,6 +86,7 @@ func (s *Server) handleRemoveQuoteByID(w http.ResponseWriter, r *http.Request, p
 	if err == false{
 		log.Print(err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
 	}
 
 	utils.RespJson(w, quotes)
@@ -92,12 +96,13 @@ func (s *Server) handleRemoveQuoteByID(w http.ResponseWriter, r *http.Request, p
 
 func (s *Server) handleGetQuoteByCategory(w http.ResponseWriter, r *http.Request, ps httprouter.Params)  {
 	category := ps.ByName("category")
-	fmt.Println(category)
+
 
 	quotes, err := s.quotes.GetQuotesByCategory(category)
 	if err != nil {
 		log.Print(err)
 		http.Error(w, "Category not found", http.StatusNotFound)
+		return
 	}
 	utils.RespJson(w, quotes)
 
@@ -108,6 +113,7 @@ func (s *Server) handleGetRandomQuote(w http.ResponseWriter, r *http.Request, _ 
 	if err != nil {
 		log.Print(err)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
 	}
 	utils.RespJson(w, quote)
 

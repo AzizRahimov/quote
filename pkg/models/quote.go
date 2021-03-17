@@ -35,7 +35,6 @@ func NewQuotes() *Quotes {
 
 //Create Quotes
 func (q *Quotes) CreateQuote(quote *Quote) (err error ) {
-		fmt.Println(quote)
 
 		quote.ID = uuid.New().String()
 		q.Quotes[quote.ID] = *quote
@@ -50,35 +49,36 @@ func (q *Quotes) CreateQuote(quote *Quote) (err error ) {
 }
 // Get All Quotes
 func (q *Quotes) GetAllQuotes() ([]Quote, error) {
+
 	quotes := []Quote{}
-	for _, value := range q.Quotes{
+	for _, value := range q.Quotes {
 		quotes = append(quotes, value)
 
 	}
-	if quotes == nil{
-		return nil,  ErrNotFound
+	if quotes == nil {
+		return nil, ErrNotFound
 	}
 
 	return quotes, nil
 }
 
 // EditQuote - edit quote by id
-func (q *Quotes) EditQuote(quote *Quote) (*Quote, error)  {
+func (q *Quotes) EditQuote(quote *Quote) (*Quote, error) {
 
-	for key, _ := range q.Quotes{
-			if key == quote.ID{
-				q.Quotes[quote.ID] = *quote
-				return quote, nil
-			}
-
+	for key, _ := range q.Quotes {
+		if key == quote.ID {
+			q.Quotes[quote.ID] = *quote
+			return quote, nil
 		}
+
+	}
 
 	return nil, ErrIDNotFound
 
 }
 //Delete - Quote by ID
 func (q *Quotes) DeleteQuoteByID(id string) ([]Quote, bool) {
-	if id == ""{
+	if id == "" {
 		return nil, false
 	}
 	if _, ok := q.Quotes[id]; ok {
@@ -95,16 +95,15 @@ func (q *Quotes) GetQuotesByCategory(category string) ([]Quote, error) {
 
 	quotes := []Quote{}
 
-	for _, value := range q.Quotes{
-		if value.Category == category{
+	for _, value := range q.Quotes {
+		if value.Category == category {
 			quotes = append(quotes, value)
 
 		}
 	}
-	if quotes == nil{
+	if quotes == nil {
 		return nil, ErrNotFound
 	}
-
 
 	return quotes, nil
 }
@@ -134,11 +133,9 @@ func (q *Quotes) GetRandomQuote() (*Quote, error) {
 // Delete Quotes old quotes that were created 1 hour ago
 func (q *Quotes) DeleteOldQuotes() {
 
-	fmt.Println("функция вызвалась")
 	for _, quote := range q.Quotes {
-		fmt.Println("добралась до цикла")
-		// 9/10
-		if utils.IsTimePassed(time.Now().Add( - time.Hour), quote.CreatedAt) {
+
+		if utils.IsTimePassed(time.Now().Add(- time.Hour), quote.CreatedAt) {
 			fmt.Println("true")
 			q.DeleteQuoteByID(quote.ID)
 		}
